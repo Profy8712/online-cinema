@@ -1,13 +1,12 @@
 from sqlalchemy import (
     Column, Integer, String, Float, ForeignKey, Text, Table, DECIMAL, UniqueConstraint
 )
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
+from src.db.base import Base
 
-Base = declarative_base()
-
-# Association Tables
+# Association tables
 movie_genres = Table(
     "movie_genres", Base.metadata,
     Column("movie_id", ForeignKey("movies.id"), primary_key=True),
@@ -28,25 +27,21 @@ movie_stars = Table(
 
 class Genre(Base):
     __tablename__ = "genres"
-
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
 
 class Star(Base):
     __tablename__ = "stars"
-
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
 
 class Director(Base):
     __tablename__ = "directors"
-
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
 
 class Certification(Base):
     __tablename__ = "certifications"
-
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
 

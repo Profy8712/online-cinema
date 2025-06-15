@@ -1,11 +1,10 @@
 from sqlalchemy import (
     Column, Integer, ForeignKey, DateTime, Enum, DECIMAL, String
 )
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
 from datetime import datetime
 import enum
-
-Base = declarative_base()
+from src.db.base import Base
 
 class PaymentStatusEnum(str, enum.Enum):
     successful = "successful"
@@ -29,11 +28,10 @@ class Payment(Base):
 
 class PaymentItem(Base):
     __tablename__ = "payment_items"
-
     id = Column(Integer, primary_key=True)
     payment_id = Column(Integer, ForeignKey("payments.id"), nullable=False)
     order_item_id = Column(Integer, ForeignKey("order_items.id"), nullable=False)
     price_at_payment = Column(DECIMAL(10, 2), nullable=False)
 
     payment = relationship("Payment", back_populates="items")
-    # Optionally, relationship to OrderItem
+    # Optionally: relationship to OrderItem if needed

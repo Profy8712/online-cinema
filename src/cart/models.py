@@ -1,8 +1,7 @@
 from sqlalchemy import Column, Integer, ForeignKey, DateTime, UniqueConstraint
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
 from datetime import datetime
-
-Base = declarative_base()
+from src.db.base import Base
 
 class Cart(Base):
     __tablename__ = "carts"
@@ -21,6 +20,6 @@ class CartItem(Base):
     added_at = Column(DateTime, default=datetime.utcnow)
 
     cart = relationship("Cart", back_populates="items")
-    # Optionally, relationship to Movie can be added if needed
+    # Optional: relationship to Movie if needed
 
     __table_args__ = (UniqueConstraint('cart_id', 'movie_id', name='uq_cart_movie'),)

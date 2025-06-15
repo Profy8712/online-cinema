@@ -1,21 +1,19 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Enum, Text
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy import (
+    Column, Integer, String, Boolean, ForeignKey, DateTime, Enum, Text
+)
+from sqlalchemy.orm import relationship
 from datetime import datetime
+from src.db.base import Base
 from .enums import UserGroupEnum, GenderEnum
-
-Base = declarative_base()
 
 class UserGroup(Base):
     __tablename__ = "user_groups"
-
     id = Column(Integer, primary_key=True)
     name = Column(Enum(UserGroupEnum), unique=True, nullable=False)
-
     users = relationship("User", back_populates="group")
 
 class User(Base):
     __tablename__ = "users"
-
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
@@ -32,7 +30,6 @@ class User(Base):
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
-
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     first_name = Column(String)
@@ -46,7 +43,6 @@ class UserProfile(Base):
 
 class ActivationToken(Base):
     __tablename__ = "activation_tokens"
-
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     token = Column(String, unique=True, nullable=False)
@@ -56,7 +52,6 @@ class ActivationToken(Base):
 
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
-
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     token = Column(String, unique=True, nullable=False)
@@ -66,7 +61,6 @@ class PasswordResetToken(Base):
 
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
-
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     token = Column(String, unique=True, nullable=False)

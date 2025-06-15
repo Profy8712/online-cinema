@@ -1,11 +1,10 @@
 from sqlalchemy import (
     Column, Integer, ForeignKey, DateTime, Enum, DECIMAL
 )
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
 from datetime import datetime
 import enum
-
-Base = declarative_base()
+from src.db.base import Base
 
 class OrderStatusEnum(str, enum.Enum):
     pending = "pending"
@@ -26,11 +25,10 @@ class Order(Base):
 
 class OrderItem(Base):
     __tablename__ = "order_items"
-
     id = Column(Integer, primary_key=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     movie_id = Column(Integer, ForeignKey("movies.id"), nullable=False)
     price_at_order = Column(DECIMAL(10, 2), nullable=False)
 
     order = relationship("Order", back_populates="items")
-    # Optionally, add relationship to Movie if needed
+    # Optionally: add relationship to Movie if needed
