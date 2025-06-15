@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import List, Optional
 
@@ -7,8 +7,7 @@ class CartItemSchema(BaseModel):
     movie_id: int
     added_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CartSchema(BaseModel):
     id: int
@@ -16,8 +15,7 @@ class CartSchema(BaseModel):
     created_at: datetime
     items: List[CartItemSchema] = []
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CartAddItemSchema(BaseModel):
     movie_id: int

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, constr
+from pydantic import BaseModel, EmailStr, constr, ConfigDict
 from typing import Optional
 from datetime import datetime
 from .enums import UserGroupEnum, GenderEnum
@@ -11,8 +11,7 @@ class UserProfileSchema(BaseModel):
     date_of_birth: Optional[datetime] = None
     info: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserSchema(BaseModel):
     id: int
@@ -23,8 +22,7 @@ class UserSchema(BaseModel):
     group: UserGroupEnum
     profile: Optional[UserProfileSchema] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserCreateSchema(BaseModel):
     email: EmailStr
@@ -39,14 +37,3 @@ class TokenSchema(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
-
-class PasswordChangeSchema(BaseModel):
-    old_password: str
-    new_password: constr(min_length=8)
-
-class PasswordResetRequestSchema(BaseModel):
-    email: EmailStr
-
-class PasswordResetConfirmSchema(BaseModel):
-    token: str
-    new_password: constr(min_length=8)

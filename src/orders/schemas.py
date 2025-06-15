@@ -1,4 +1,4 @@
-from pydantic import BaseModel, condecimal
+from pydantic import BaseModel, condecimal, ConfigDict
 from typing import List
 from decimal import Decimal
 from datetime import datetime
@@ -8,8 +8,7 @@ class OrderItemSchema(BaseModel):
     movie_id: int
     price_at_order: condecimal(max_digits=10, decimal_places=2)
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class OrderSchema(BaseModel):
     id: int
@@ -19,8 +18,7 @@ class OrderSchema(BaseModel):
     total_amount: Decimal
     items: List[OrderItemSchema]
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class OrderCreateSchema(BaseModel):
     movie_ids: List[int]

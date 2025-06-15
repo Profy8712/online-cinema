@@ -1,30 +1,30 @@
-from pydantic import BaseModel, condecimal
+from pydantic import BaseModel, condecimal, ConfigDict
 from typing import List, Optional
 from decimal import Decimal
 
 class GenreSchema(BaseModel):
     id: int
     name: str
-    class Config:
-        orm_mode = True
+
+    model_config = ConfigDict(from_attributes=True)
 
 class StarSchema(BaseModel):
     id: int
     name: str
-    class Config:
-        orm_mode = True
+
+    model_config = ConfigDict(from_attributes=True)
 
 class DirectorSchema(BaseModel):
     id: int
     name: str
-    class Config:
-        orm_mode = True
+
+    model_config = ConfigDict(from_attributes=True)
 
 class CertificationSchema(BaseModel):
     id: int
     name: str
-    class Config:
-        orm_mode = True
+
+    model_config = ConfigDict(from_attributes=True)
 
 class MovieBaseSchema(BaseModel):
     name: str
@@ -52,5 +52,4 @@ class MovieSchema(MovieBaseSchema):
     stars: List[StarSchema]
     certification: CertificationSchema
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

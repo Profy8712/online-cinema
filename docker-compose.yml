@@ -24,11 +24,10 @@ services:
     depends_on:
       - db
       - redis
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/online_cinema
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: "supersecret"
-      STRIPE_API_KEY: "sk_test_..."
+      PYTHONPATH: /app  # 👈 Добавлено для корректного импорта src.*
     ports:
       - "8000:8000"
     volumes:
