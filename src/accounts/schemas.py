@@ -24,6 +24,19 @@ class UserSchema(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    @classmethod
+    def from_orm(cls, obj):
+        # If your model property is not named exactly as in schema, map it
+        return cls(
+            id=obj.id,
+            email=obj.email,
+            is_active=obj.is_active,
+            created_at=obj.created_at,
+            updated_at=obj.updated_at,
+            group=getattr(obj.group, "name", None),
+            profile=obj.profile
+        )
+
 class UserCreateSchema(BaseModel):
     email: EmailStr
     password: constr(min_length=8)

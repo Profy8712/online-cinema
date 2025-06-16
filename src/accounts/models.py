@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Column, Integer, String, Boolean, ForeignKey, DateTime, Enum, Text
+    Column, Integer, String, Boolean, ForeignKey, DateTime, Enum as SAEnum, Text
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -9,7 +9,7 @@ from .enums import UserGroupEnum, GenderEnum
 class UserGroup(Base):
     __tablename__ = "user_groups"
     id = Column(Integer, primary_key=True)
-    name = Column(Enum(UserGroupEnum), unique=True, nullable=False)
+    name = Column(SAEnum(UserGroupEnum), unique=True, nullable=False)
     users = relationship("User", back_populates="group")
 
 class User(Base):
@@ -22,11 +22,15 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     group_id = Column(Integer, ForeignKey("user_groups.id"), nullable=False)
 
-    group = relationship("UserGroup", back_populates="users")
-    profile = relationship("UserProfile", back_populates="user", uselist=False)
+    group = relationship("UserGroup", back_populates="users", lazy="joined")
+    profile = relationship("UserProfile", back_populates="user", uselist=False, lazy="joined")
     activation_token = relationship("ActivationToken", back_populates="user", uselist=False)
     password_reset_token = relationship("PasswordResetToken", back_populates="user", uselist=False)
     refresh_tokens = relationship("RefreshToken", back_populates="user")
+
+    @property
+    def group_enum(self):
+        return self.group.name if self.group else None
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
@@ -35,7 +39,7 @@ class UserProfile(Base):
     first_name = Column(String)
     last_name = Column(String)
     avatar = Column(String)
-    gender = Column(Enum(GenderEnum))
+    gender = Column(SAEnum(GenderEnum))
     date_of_birth = Column(DateTime)
     info = Column(Text)
 

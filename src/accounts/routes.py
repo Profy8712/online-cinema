@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from src.db.session import get_async_session
 from .schemas import UserCreateSchema, UserLoginSchema, UserSchema, TokenSchema
 from .models import User, UserGroup, ActivationToken
 from .password_utils import hash_password, verify_password
 from .jwt_utils import create_access_token, create_refresh_token
-from sqlalchemy.future import select
 import uuid
 from datetime import datetime, timedelta
 
@@ -13,12 +14,10 @@ router = APIRouter(prefix="/accounts", tags=["accounts"])
 
 @router.post("/register", response_model=UserSchema)
 async def register(user: UserCreateSchema, session: AsyncSession = Depends(get_async_session)):
-    # Check if user with this email already exists
     result = await session.execute(select(User).where(User.email == user.email))
     if result.scalar_one_or_none():
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    # Check if the group exists
     group_result = await session.execute(select(UserGroup).where(UserGroup.name == user.group))
     group = group_result.scalar_one_or_none()
     if not group:
@@ -41,8 +40,17 @@ async def register(user: UserCreateSchema, session: AsyncSession = Depends(get_a
     session.add(activation_token)
     await session.commit()
     await session.refresh(db_user)
-    # TODO: send activation email with token
-    return db_user
+    # Re-select the user with joined group/profile for proper serialization
+    result = await session.execute(
+        select(User)
+        .options(
+            selectinload(User.group),
+            selectinload(User.profile)
+        )
+        .where(User.id == db_user.id)
+    )
+    db_user = result.scalar_one()
+    return UserSchema.from_orm(db_user)
 
 @router.post("/login", response_model=TokenSchema)
 async def login(data: UserLoginSchema, session: AsyncSession = Depends(get_async_session)):
@@ -54,7 +62,11 @@ async def login(data: UserLoginSchema, session: AsyncSession = Depends(get_async
         raise HTTPException(status_code=403, detail="Account is not activated")
     access_token = create_access_token({"sub": str(user.id)})
     refresh_token = create_refresh_token({"sub": str(user.id)})
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
 
 @router.get("/activate")
 async def activate(token: str, session: AsyncSession = Depends(get_async_session)):
