@@ -27,12 +27,12 @@ services:
     env_file:
       - .env
     environment:
-      PYTHONPATH: /app  # 👈 Добавлено для корректного импорта src.*
+      PYTHONPATH: /app  # Для корректного импорта модулей src.*
     ports:
       - "8000:8000"
     volumes:
       - .:/app
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    command: python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload --loop asyncio --workers 1
 
 volumes:
   postgres_data:

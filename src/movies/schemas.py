@@ -1,6 +1,7 @@
 from pydantic import BaseModel, condecimal, ConfigDict
 from typing import List, Optional
 from decimal import Decimal
+from uuid import UUID
 
 class GenreSchema(BaseModel):
     id: int
@@ -37,16 +38,16 @@ class MovieBaseSchema(BaseModel):
     description: str
     price: condecimal(max_digits=10, decimal_places=2)
     certification_id: int
-    genre_ids: List[int]
-    director_ids: List[int]
-    star_ids: List[int]
+    genre_ids: Optional[List[int]] = []
+    director_ids: Optional[List[int]] = []
+    star_ids: Optional[List[int]] = []
 
 class MovieCreateSchema(MovieBaseSchema):
     pass
 
 class MovieSchema(MovieBaseSchema):
     id: int
-    uuid: str
+    uuid: UUID
     genres: List[GenreSchema]
     directors: List[DirectorSchema]
     stars: List[StarSchema]

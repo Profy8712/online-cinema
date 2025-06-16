@@ -19,7 +19,8 @@ async def movie_detail(movie_id: int, session: AsyncSession = Depends(get_async_
 
 @router.post("/", response_model=MovieSchema, status_code=status.HTTP_201_CREATED)
 async def create_movie_endpoint(movie: MovieCreateSchema, session: AsyncSession = Depends(get_async_session)):
-    new_movie = await create_movie(session, movie)
-    if not new_movie:
-        raise HTTPException(status_code=400, detail="Error creating movie")
+    try:
+        new_movie = await create_movie(session, movie)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return new_movie

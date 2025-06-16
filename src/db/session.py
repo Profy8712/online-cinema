@@ -4,8 +4,18 @@ from src.core.config import settings
 
 DATABASE_URL = settings.DATABASE_URL
 
-engine = create_async_engine(DATABASE_URL, echo=True)
-async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=True,
+    future=True  # Для SQLAlchemy 2.0+
+)
+
+async_session_maker = sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    future=True  # Для SQLAlchemy 2.0+
+)
 
 Base = declarative_base()
 
