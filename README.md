@@ -11,11 +11,10 @@ A modern web-based cinema platform for browsing, purchasing, and watching movies
 1.3. Add movies to favorites and cart  
 1.4. Stripe payment integration  
 1.5. Role-based permissions: User, Moderator, Admin  
-1.6. Order system: place, cancel, pay  
-1.7. Admin panel for movie/content management  
-1.8. Dockerized for development and production  
-1.9. Celery + Redis for background jobs (e.g., deleting expired tokens, Telegram notifications)  
-1.10. API documentation (Swagger / ReDoc / OpenAPI 3.0)  
+1.6. Order system: place, cancel, pay   
+1.7. Dockerized for development and production  
+1.8. Celery + Redis for background jobs (e.g., deleting expired tokens, Telegram notifications)  
+1.9. API documentation (Swagger / ReDoc / OpenAPI 3.0)  
 
 ---
 
@@ -143,14 +142,7 @@ pytest --cov=src --cov-report=html
 
 ---
 
-## 9. Notifications
-
-- **Email**: activation, password reset, order confirmations  
-- **Telegram**: optional admin alerts via Celery background tasks
-
----
-
-## 10. Docker Compose Services
+## 9. Docker Compose Services
 
 | Service        | Description                          |
 |----------------|--------------------------------------|
@@ -165,7 +157,7 @@ pytest --cov=src --cov-report=html
 
 ---
 
-## 11. Security
+## 10. Security
 
 - Set `DEBUG=False` in production  
 - Use strong secrets & tokens  
