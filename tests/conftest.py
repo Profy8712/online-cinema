@@ -5,33 +5,37 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from src.main import app
 from src.db.session import Base, get_async_session
 
-TEST_DATABASE_URL = os.getenv(
-    "TEST_DATABASE_URL",
-    "postgresql+asyncpg://postgres:postgres@db:5432/online_cinema_test"
-)
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql+asyncpg://postgres:postgres@db:5432/online_cinema_test")
 
-engine_test = create_async_engine(TEST_DATABASE_URL, future=True, echo=False)
-async_session_maker = async_sessionmaker(engine_test, expire_on_commit=False)
+@pytest.fixture(scope="function")
+async def engine():
+    engine = create_async_engine(TEST_DATABASE_URL, echo=True)
+    yield engine
+    await engine.dispose()
 
-# Переопределение зависимости
-async def override_get_async_session() -> AsyncSession:
-    async with async_session_maker() as session:
-        yield session
+@pytest.fixture(scope="function")
+async def async_session_maker(engine):
+    return async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-app.dependency_overrides[get_async_session] = override_get_async_session
+@pytest.fixture(scope="function")
+async def override_get_async_session(async_session_maker):
+    async def _override():
+        async with async_session_maker() as session:
+            yield session
+    return _override
 
-# Подготовка базы данных
-@pytest.fixture(scope="session", autouse=True)
-async def prepare_database():
-    async with engine_test.begin() as conn:
+@pytest.fixture(scope="function", autouse=True)
+async def prepare_database(engine):
+    async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
-    async with engine_test.begin() as conn:
+    async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
-# ✅ Фикстура с ASGITransport
-@pytest.fixture
-async def async_client():
+@pytest.fixture(scope="function")
+async def async_client(override_get_async_session):
+    app.dependency_overrides[get_async_session] = override_get_async_session
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
+    app.dependency_overrides.clear()

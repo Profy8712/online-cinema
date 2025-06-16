@@ -6,7 +6,6 @@ from .models import User, UserGroup, ActivationToken
 from .password_utils import hash_password, verify_password
 from .jwt_utils import create_access_token, create_refresh_token
 from sqlalchemy.future import select
-from jose import JWTError
 import uuid
 from datetime import datetime, timedelta
 
@@ -14,11 +13,17 @@ router = APIRouter(prefix="/accounts", tags=["accounts"])
 
 @router.post("/register", response_model=UserSchema)
 async def register(user: UserCreateSchema, session: AsyncSession = Depends(get_async_session)):
+    # Check if user with this email already exists
     result = await session.execute(select(User).where(User.email == user.email))
     if result.scalar_one_or_none():
         raise HTTPException(status_code=409, detail="Email already registered")
+
+    # Check if the group exists
     group_result = await session.execute(select(UserGroup).where(UserGroup.name == user.group))
-    group = group_result.scalar_one()
+    group = group_result.scalar_one_or_none()
+    if not group:
+        raise HTTPException(status_code=400, detail="User group does not exist")
+
     db_user = User(
         email=user.email,
         hashed_password=hash_password(user.password),

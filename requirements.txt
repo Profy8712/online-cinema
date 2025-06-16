@@ -1,9 +1,9 @@
-# FastAPI и ASGI
+# FastAPI & ASGI
 fastapi==0.115.12
 uvicorn==0.34.3
 starlette==0.46.2
 
-# Pydantic v2 и настройки
+# Pydantic v2 & Settings
 pydantic==2.11.5
 pydantic-settings==2.9.1
 pydantic_core==2.33.2
@@ -13,36 +13,37 @@ SQLAlchemy==2.0.41
 asyncpg
 alembic==1.16.1
 
-# Redis и Celery
+# Redis & Celery
 redis==6.2.0
 celery==5.5.3
 kombu==5.5.4
 billiard==4.2.1
 amqp==5.3.1
 
-# Аутентификация, безопасность
+# Auth & Security
 passlib==1.7.4
 python-jose==3.5.0
 bcrypt==4.3.0
-email_validator==2.2.0
+email-validator==2.2.0
 
-# Работа с .env
+# Env config
 python-dotenv==1.1.0
 
-# HTTP-запросы и Stripe
+# HTTP & Stripe
 httpx==0.28.1
 stripe
 
-# Загрузка файлов
+# File uploads
 aiofiles==24.1.0
 python-multipart==0.0.20
 
-# Тестирование
+# Testing
 pytest
+pytest-cov
 pytest-asyncio
 anyio==4.9.0
 
-# Дополнительно
+# Utilities
 cryptography==45.0.4
 greenlet==3.2.3
 requests==2.32.4

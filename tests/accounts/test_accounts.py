@@ -6,5 +6,4 @@ async def test_registration(async_client):
         "email": "test@example.com",
         "password": "testpassword123"
     })
-    # 200 OK, 201 Created, или 409 Conflict — регистрация может быть повторной
     assert resp.status_code in (200, 201, 409)
