@@ -7,11 +7,12 @@ from src.payments.routes import router as payments_router
 from src.core.config import settings
 import stripe
 
+# Set Stripe API key
 stripe.api_key = settings.STRIPE_API_KEY
 
 app = FastAPI(title="Online Cinema")
 
-# Без дублирующих префиксов:
+# Register routers without duplicate prefixes
 app.include_router(accounts_router)
 app.include_router(movies_router)
 app.include_router(cart_router)
@@ -19,5 +20,5 @@ app.include_router(orders_router)
 app.include_router(payments_router)
 
 @app.get("/")
-def root():
+async def root():
     return {"msg": "Hello from Online Cinema!"}
